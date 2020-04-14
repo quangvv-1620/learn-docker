@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  db:
+    container_name: mysql_image
+    image: mysql:5.7
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    networks: 
+      - my-network
+    restart: always
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+  app:
+    container_name: rails_app
+    build: .
+    volumes:
+      - .:/project
+      - bundle:/bundle
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
+    restart: always
+    networks: 
+      - my-network
+  
+networks: 
+  my-network:
+    driver: bridge
+
+volumes:
+  bundle:
